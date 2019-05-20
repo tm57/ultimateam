@@ -1,4 +1,6 @@
 import fut
+import marketLog
+import Sale
 
 class Sell:
 
@@ -9,7 +11,7 @@ class Sell:
 
 	def calculateSellPrice(self, Item):
 
-		derivative = self.pricing.getDerivative(Item.item_id)
+		derivative = self.pricing.getDerivative(Item.itemId)
 		currentPrice = derivative.current
 		futurePrice = derivative.future
 		tendency = derivative.tendency
@@ -33,7 +35,9 @@ class Sell:
 
 		sellPrice = self.calculateSellPrice(Item)
 
-		if(sellPrice)
+		if sellPrice == None:
+			return
 
-
-
+		session = fut.Core('email', 'password', platform='ps4')
+		session.sell(Item.itemId, sellPrice, buy_now = sellPrice + 900, duration = 3600)
+		# marketLog.log(new Sale(Item.itemId, sellPrice, buy_now, duration)) use queue
