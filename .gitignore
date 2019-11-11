@@ -1,5 +1,7 @@
-.env/
+.env
 .idea/
 __pycache__/
 data/
-
+venv/
+cookies.txt
+token.txt
