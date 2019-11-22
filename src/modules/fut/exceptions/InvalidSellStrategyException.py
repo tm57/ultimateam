@@ -1,0 +1,2 @@
+class InvalidSellStrategyException(Exception):
+    pass

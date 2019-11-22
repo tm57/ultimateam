@@ -1,0 +1,2 @@
+class InvalidClubFetcherException(Exception):
+    pass
