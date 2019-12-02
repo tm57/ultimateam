@@ -1,7 +1,9 @@
-from src.utils.utils import log
+from src.utils.utils import log, sleep
 
 
 class Sniper:
+    MAX_MISSES = 3
+
     def __init__(self, client):
         self.client = client
 
@@ -9,15 +11,18 @@ class Sniper:
         client = self.client
         ok = True
         start = 0
-        bid = 800
+        bid = 850
         won_items = []
         while ok:
             items = client.searchAuctions('development', max_buy=bid, defId=5002006, fast=False, start=start)
-
+            items = items[::-1]
             if not len(items):
-                break
+                print 'No items dawg'
+                start = 0
+                continue
 
             start = start + len(items)
+            miss = 0
             for item in items:
 
                 state = client.bid(item['tradeId'], bid)
@@ -28,9 +33,16 @@ class Sniper:
                     print 'Snipped %d for %d' % (item['tradeId'], bid)
                 else:
                     print 'Lost it'
-                    # bid = 750
+                    bid = 900
+                    miss += 1
+                if miss > self.MAX_MISSES:
+                    start += len(items)
+                    bid = 850
+                    break
 
-                if len(won_items) >= 10:
+                if len(won_items) >= 45:
                     ok = False
                     break
             print 'Still running'
+            # self.client.keepalive()
+            sleep(3)

@@ -8,8 +8,8 @@ import time
 
 
 class Gold300Buyer:
-    MAX_SEARCH_REQUESTS = 100
-    MAX_OUTBID_THRESHOLD_PER_PAGE = 4
+    MAX_SEARCH_REQUESTS = 30
+    MAX_OUTBID_THRESHOLD_PER_PAGE = 3
     MAX_BID_PRICE = 300
 
     def __init__(self, client):
@@ -49,8 +49,8 @@ class Gold300Buyer:
                     if trade_state == TRADE_STATE_ACTIVE:
                         result = client.bid(trade_id, self.MAX_BID_PRICE)
 
-                        # if not result:
-                        #     result = client.bid(trade_id, self.MAX_BID_PRICE + 50)
+                        if not result:
+                            result = client.bid(trade_id, self.MAX_BID_PRICE + 50)
                         num_of_bids = num_of_bids + 1 if result else num_of_bids
                         available_slots = available_slots - 1 if result else available_slots
                         falsy_counter = falsy_counter + 1 if not result else falsy_counter
@@ -58,7 +58,6 @@ class Gold300Buyer:
                         print '--> Status: %s' % str(result)
                     else:
                         misses += 1
-                        client.keepalive()
 
                     if falsy_counter >= self.MAX_OUTBID_THRESHOLD_PER_PAGE:
                         print '--> Skipping to next page because too many outbids\n'
@@ -68,10 +67,10 @@ class Gold300Buyer:
                     print 'NoTradeExistingError'
                     continue
 
-            time_to_sleep = random.randint(1, 4)
+            time_to_sleep = random.randint(1, 3)
             print('--> Sleeping for %d seconds before buying.' % time_to_sleep)
+            # client.keepalive()
             sleep(time_to_sleep)
-            client.keepalive()
 
             if num_requests >= self.MAX_SEARCH_REQUESTS or misses == items_length:
                 ok = False
