@@ -2,7 +2,7 @@
 **Quick Setup**
 
 
-Install python virtual environment onto your sytem first.
+Install python virtual environment onto your system first.
 
 Install pip
 
