@@ -5,3 +5,4 @@ data/
 venv/
 cookies.txt
 token.txt
+/.env
