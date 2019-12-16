@@ -1,4 +1,4 @@
-from src.modules.fut.constants import PILE_SIZE
+from src.ultimateam.fut.constants import PILE_SIZE
 
 
 class ClubFetcher:

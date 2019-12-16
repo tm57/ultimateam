@@ -13,11 +13,13 @@ class Sniper:
         start = 0
         bid = 850
         won_items = []
+
+        available_slots = len(self.client.unassigned())
         while ok:
             items = client.searchAuctions('development', max_buy=bid, defId=5002006, fast=False, start=start)
             items = items[::-1]
             if not len(items):
-                print 'No items dawg'
+                print('No items dawg')
                 start = 0
                 continue
 
@@ -30,9 +32,10 @@ class Sniper:
                     won_items.append(item['tradeId'])
                     data = '%d, %d \n' % (bid, item['tradeId'])
                     log(data, filename='./data/sniper.csv')
-                    print 'Snipped %d for %d' % (item['tradeId'], bid)
+                    print('Snipped %d for %d' % (item['tradeId'], bid))
+                    available_slots -= 1
                 else:
-                    print 'Lost it'
+                    print('Lost it')
                     bid = 900
                     miss += 1
                 if miss > self.MAX_MISSES:
@@ -40,9 +43,9 @@ class Sniper:
                     bid = 850
                     break
 
-                if len(won_items) >= 45:
+                if len(won_items) >= 50 or available_slots <= 50:
                     ok = False
                     break
-            print 'Still running'
+            print('Still running')
             # self.client.keepalive()
             sleep(3)

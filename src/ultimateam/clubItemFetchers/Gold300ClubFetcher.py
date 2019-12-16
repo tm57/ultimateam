@@ -10,8 +10,7 @@ class Gold300ClubFetcher:
             'level': 'gold'
         }
 
-    @staticmethod
-    def filterItem(item):
+    def filterItem(self, item):
         price = item['lastSalePrice']
         item_id = None
         if 0 < price <= 350 or item['marketDataMinPrice'] == 350:
@@ -19,6 +18,7 @@ class Gold300ClubFetcher:
         return item_id
 
     def fetch(self):
+        return []
         start = 0
         max_to_fetch = 15
         result = []
