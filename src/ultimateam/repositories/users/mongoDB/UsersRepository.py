@@ -5,17 +5,10 @@ from src.ultimateam.repositories.users.UsersRepositoryInterface import UsersRepo
 
 
 class UsersRepository(implements(UsersRepositoryInterface), MongoDbRepository):
-
-    def create(self, email, password, passphrase):
-        data = {
-            'email': email,
-            'password': password,
-            'passphrase': passphrase
-        }
-        return self.client.db.users.insert(data)
+    collection = 'users'
 
     def getUsers(self, **kwargs):
-        return self.client.db.users.find().limit(kwargs['limit'])
+        return super().find({}).limit(kwargs['limit'])
 
     def getUser(self, user_id):
-        return self.client.db.users.find({'user_id': user_id}).limit(1)
+        return super().find({'user_id': user_id}).limit(1)
