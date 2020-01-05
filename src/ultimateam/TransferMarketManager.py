@@ -5,6 +5,9 @@ from src.ultimateam.clubItemFetchers.Gold300ClubFetcher import Gold300ClubFetche
 from src.ultimateam.clubItemFetchers.SFclubFetcher import SFclubFetcher
 from src.ultimateam.fut.buyStrategies.exchanger import Exchanger
 from src.ultimateam.fut.exceptions.InvalidClubFetcherException import InvalidClubFetcherException
+from src.ultimateam.fut.sellerStrategies.exchangeSeller import ExchangeSeller
+from src.ultimateam.fut.sellerStrategies.sellerPolicies.exchangeSellerPolicy import ExchangeSellerPolicy
+from src.ultimateam.fut.sellerStrategies.sellerPolicies.sniperSellerPolicy import SniperSellerPolicy
 from src.utils.utils import sendMessage, log, sleep
 from src.ultimateam.fut.buyStrategies.gold300buyer import Gold300Buyer
 from src.ultimateam.fut.buyStrategies.sniper import Sniper
@@ -15,7 +18,6 @@ from src.ultimateam.fut.futClient import FutClient
 from src.ultimateam.fut.seller import Seller
 from src.ultimateam.fut.sellerStrategies.gold300Seller import Gold300Seller
 from src.ultimateam.fut.sellerStrategies.sniperSeller import SniperSeller
-from src.ultimateam.fut.sellerStrategies.sniperSellerRule.SniperSellerRule import SniperSellerRule
 from src.ultimateam.fut.constants import *
 
 
@@ -69,16 +71,19 @@ class TransferMarketManager:
         print('-->  %d items have been moved from watchlist/unassigned to trade pile' % num_moved)
         self.fetchItemsFromClubToTradepile(strategy)
 
-    async def performSell(self, strategy_name, bid=1000, max_buy_now=7000, duration=3600 * 3):
+    async def performSell(self, strategy_name):
         await self.performTradePileCleanup()
         self.moveItemsToTradePile(strategy_name)
         rule = None
 
-        if strategy_name not in [SELL_STRATEGY_SNIPER, SELL_STRATEGY_G300]:
+        if strategy_name not in [SELL_STRATEGY_SNIPER, SELL_STRATEGY_G300, EXCHANGE_STRATEGY]:
             raise InvalidSellStrategyException(strategy_name)
 
         if strategy_name == SELL_STRATEGY_SNIPER:
-            rule = SniperSellerRule(1200, 1500)
+            rule = SniperSellerPolicy(1200, 1500)
+
+        if strategy_name == EXCHANGE_STRATEGY:
+            rule = ExchangeSellerPolicy().get()
 
         strategy = self.getSellerStrategy(strategy_name, rule=rule)
 
@@ -87,13 +92,13 @@ class TransferMarketManager:
         items = filter(lambda x: x['tradeState'] is None, tradepile)
 
         item_ids = map(lambda x: x['id'], items)
-        await seller.sell(item_ids=item_ids)
+        return await seller.sell(item_ids=item_ids)
 
     async def performBuy(self, strategy_name, send_to_club=False, **kwargs):
         self.cleanUpWatchlistOutBid()
-        strategy = self.getBuyStrategy(strategy_name)
-        buyer = Buyer(strategy, **kwargs)
-        buyer.buy()
+        strategy = self.getBuyStrategy(strategy_name, **kwargs)
+        buyer = Buyer(strategy)
+        await buyer.buy()
 
         if send_to_club:
             self.sendWatchlistToClub()
@@ -112,7 +117,7 @@ class TransferMarketManager:
                                       '\n-->INITIAL BALANCE: %d\n' \
                                       '--> NEW BALANCE: %d' \
                                       '\nPROFIT/LOSS %d\n' \
-                                      'Trapile Size: %d' % (
+                                      'Tradepile Size: %d' % (
                           initial_balance, balance, (balance - initial_balance), pile_size)
                 print(msg)
                 sendMessage(msg)
@@ -135,6 +140,8 @@ class TransferMarketManager:
             return Gold300Seller(self.client)
         if name == SNIPER_STRATEGY:
             return SniperSeller(self.client, rule)
+        if name == EXCHANGE_STRATEGY:
+            return ExchangeSeller(self.client, rule)
         raise InvalidSellStrategyException(name + 'is an invalid sell strategy')
 
     def sold(self):

@@ -1,3 +1,4 @@
+import asyncio
 import random
 
 from fut.exceptions import NoTradeExistingError
@@ -15,7 +16,7 @@ class Gold300Buyer:
     def __init__(self, client):
         self.client = client
 
-    def buy(self):
+    async def buy(self):
         client = self.client
         start = 0
         num_of_bids = 0
@@ -69,11 +70,11 @@ class Gold300Buyer:
 
             time_to_sleep = random.randint(0, 3)
             print('--> Sleeping for %d seconds before buying.' % time_to_sleep)
-            sleep(time_to_sleep)
+            await asyncio.sleep(time_to_sleep)
 
             if num_requests >= self.MAX_SEARCH_REQUESTS or misses == items_length:
                 ok = False
 
         localtime = time.asctime(time.localtime(time.time()))
-        msg = "Balance after bidding : %d %s" % (client.keepalive(), localtime)
+        msg = "Balance after bidding: %d %s" % (client.keepalive(), localtime)
         sendMessage(msg)

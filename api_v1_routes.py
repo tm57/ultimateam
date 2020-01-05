@@ -69,11 +69,11 @@ def index():
 
 
 async def main(callables):
-    return await asyncio.gather(*((data['manager'].performSell(data['strategy'])) for data in callables))
+    return await asyncio.gather(*((data['manager'].performAutoTrade('sniper')) for data in callables))
 
 
 if __name__ == "__main__":
     env = os.environ.get('APP_ENV', 'development')
     port = int(os.environ.get('APP_PORT', 3000))
     debug = False if env == 'production' else True
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=port, debug=debug)

@@ -1,6 +1,6 @@
 class Buyer:
-    def __init__(self, buy_strategy, **kwargs):
-        self.buyStrategy = buy_strategy(**kwargs)
+    def __init__(self, buy_strategy):
+        self.buyStrategy = buy_strategy
 
-    def buy(self):
-        self.buyStrategy.buy()
+    async def buy(self):
+        await self.buyStrategy.buy()

@@ -11,13 +11,13 @@ class Exchanger:
         'type',
         'max_buy',
         'max_price',
-        'items',
+        'trade_ids',
         'level'
     ]
 
     def __init__(self, client, **kwargs):
         self.quantity = 0
-        self.items = []
+        self.trade_ids = []
         self.max_buy = None
         self.max_price = None
         self.level = None
@@ -30,20 +30,17 @@ class Exchanger:
                 setattr(self, key, value)
 
     def buy(self):
-        if self.items:
+        if self.trade_ids:
             return self._performTargetItemsHunt()
         return self._performUptoHunt()
 
     async def _performUptoHunt(self):
         start = 0
         client = self.client
-        level = getattr(self, 'level')
-        ctype = getattr(self, 'type')
-        quantity = getattr(self, 'quantity')
         ok = True
 
         while ok:
-            items = client.searchAuctions(ctype, level=level, max_buy=self.max_buy, max_price=self.max_price,
+            items = client.searchAuctions(self.type, level=self.level, max_buy=self.max_buy, max_price=self.max_price,
                                           fast=False,
                                           start=start)
             for item in items:
@@ -51,7 +48,7 @@ class Exchanger:
                 state = self._bidUpto(trade_id, self.max_price, self.max_buy)
                 if state:
                     self.num_bids_placed += 1
-                    if self.num_bids_placed >= quantity:
+                    if self.num_bids_placed >= self.quantity:
                         ok = False
                         break
             if ok:
@@ -61,7 +58,7 @@ class Exchanger:
             if not len(items):
                 ok = False
             start += len(items)
-            return self.num_bids_placed
+        return self.num_bids_placed
 
     def _bidUpto(self, trade_id, start, max_buy):
         end = max_buy + self.STEP
