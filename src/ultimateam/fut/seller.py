@@ -1,6 +1,6 @@
-import asyncio
 import random
-import time
+
+from src.utils.utils import sleep
 
 
 class Seller:
@@ -10,7 +10,7 @@ class Seller:
         self.client = client
         self.seller = seller
 
-    async def sell(self, item_ids):
+    def sell(self, item_ids):
         trade_ids = []
         self.client.keepalive()
         if not item_ids:
@@ -26,5 +26,5 @@ class Seller:
 
             time_to_sleep = random.randint(7, 26)
             print('--> Sleeping for %d seconds before selling.' % time_to_sleep)
-            await asyncio.sleep(time_to_sleep)
+            sleep(time_to_sleep)
         return trade_ids

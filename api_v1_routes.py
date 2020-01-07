@@ -43,9 +43,9 @@ def auto():
         for ray in ray_mastereo:
             manager = TransferMarketManager(ray['email'], ray['password'], ray['passphrase'])
             futures.append({'manager': manager, 'strategy': ray['strategy']})
-        print('Starting async selling')
 
-    asyncio.run(main(futures))
+        for future in futures:
+            future['manager'].performAutoTrade(future['strategy'])
     return jsonify('Jobs running now, check your messaging up for updates 🤞')
 
 
