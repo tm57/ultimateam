@@ -6,6 +6,3 @@ from src.ultimateam.repositories.exchanges.ExchangesRepositoryInterface import E
 
 class ExchangesRepository(MongoDbRepository, implements(ExchangesRepositoryInterface)):
     collection = 'exchanges'
-
-
-

@@ -1,5 +1,6 @@
-import asyncio
 from random import random
+
+from src.utils.utils import sleep
 
 
 class Exchanger:
@@ -34,7 +35,7 @@ class Exchanger:
             return self._performTargetItemsHunt()
         return self._performUptoHunt()
 
-    async def _performUptoHunt(self):
+    def _performUptoHunt(self):
         start = 0
         client = self.client
         ok = True
@@ -54,7 +55,7 @@ class Exchanger:
             if ok:
                 time_to_sleep = random.randint(*self.SLEEP_TIME_RANGE)
                 print(f'Awaiting for {time_to_sleep} seconds before bidding')
-                await asyncio.sleep(time_to_sleep)
+                sleep(time_to_sleep)
             if not len(items):
                 ok = False
             start += len(items)
@@ -71,7 +72,7 @@ class Exchanger:
 
         return False
 
-    async def _performTargetItemsHunt(self):
+    def _performTargetItemsHunt(self):
         client = self.client
         start = 0
         ok = True
@@ -81,8 +82,8 @@ class Exchanger:
                                           max_price=self.max_price, fast=True,
                                           start=start)
             time_to_sleep = random.randint(*self.SLEEP_TIME_RANGE)
-            await asyncio.sleep(time_to_sleep)
-            my_targets = filter(lambda item: item['tradeId'] in self.items, items)
+            sleep(time_to_sleep)
+            my_targets = filter(lambda item: item['tradeId'] in self.trade_ids, items)
             if not my_targets:
                 print(f'Awaiting for {time_to_sleep} seconds before bidding, there were no targets found on this page')
                 continue

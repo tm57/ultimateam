@@ -30,7 +30,7 @@ class TransferMarketManager:
         self.bot_name = passphrase
         self.client = fut.getClient()
 
-    async def performTradePileCleanup(self):
+    def performTradePileCleanup(self):
         num_sold = self.sold()
 
         if num_sold > 0:
@@ -71,8 +71,8 @@ class TransferMarketManager:
         print('-->  %d items have been moved from watchlist/unassigned to trade pile' % num_moved)
         self.fetchItemsFromClubToTradepile(strategy)
 
-    async def performSell(self, strategy_name):
-        await self.performTradePileCleanup()
+    def performSell(self, strategy_name):
+        self.performTradePileCleanup()
         self.moveItemsToTradePile(strategy_name)
         rule = None
 
@@ -92,24 +92,24 @@ class TransferMarketManager:
         items = filter(lambda x: x['tradeState'] is None, tradepile)
 
         item_ids = map(lambda x: x['id'], items)
-        return await seller.sell(item_ids=item_ids)
+        return seller.sell(item_ids=item_ids)
 
-    async def performBuy(self, strategy_name, send_to_club=False, **kwargs):
+    def performBuy(self, strategy_name, send_to_club=False, **kwargs):
         self.cleanUpWatchlistOutBid()
         strategy = self.getBuyStrategy(strategy_name, **kwargs)
         buyer = Buyer(strategy)
-        await buyer.buy()
+        buyer.buy()
 
         if send_to_club:
             self.sendWatchlistToClub()
 
-    async def performAutoTrade(self, strategy_name):
+    def performAutoTrade(self, strategy_name):
         ok = True
         initial_balance = self.client.keepalive()
 
         while ok:
-            await self.performBuy(strategy_name)
-            await self.performSell(strategy_name)
+            self.performBuy(strategy_name)
+            self.performSell(strategy_name)
             balance = self.client.keepalive()
             pile_size = self.pileSize()
             if pile_size >= self.AUTO_TRADE_PILE_SIZE_LIMIT:

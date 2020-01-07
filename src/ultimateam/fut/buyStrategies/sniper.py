@@ -1,5 +1,3 @@
-import asyncio
-
 from src.utils.utils import log, sleep
 
 
@@ -9,7 +7,7 @@ class Sniper:
     def __init__(self, client):
         self.client = client
 
-    async def buy(self):
+    def buy(self):
         client = self.client
         ok = True
         start = 0
@@ -49,4 +47,4 @@ class Sniper:
                     ok = False
                     break
             print('Still running')
-            await asyncio.sleep(3)
+            sleep(3)
