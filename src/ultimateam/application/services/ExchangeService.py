@@ -29,14 +29,14 @@ class ExchangeService:
         buy_ray = trade_info.buy_ray
         buyer = TransferMarketManager(*buy_ray)
         buy_criteria = self.getBuyCriteria(trade_info.target)
-        items = await buyer.performBuy(strategy_name=EXCHANGE_STRATEGY, *buy_criteria)
-        await buyer.performSell(strategy_name=EXCHANGE_STRATEGY, bid=1000, max_buy_now=7000, duration=3600 * 3)
+        await buyer.performBuy(strategy_name=EXCHANGE_STRATEGY, **buy_criteria)
+        trade_ids = await buyer.performSell(EXCHANGE_STRATEGY)
 
         buy_criteria = self.getBuyCriteria(trade_info.target, ray_type=self.SELLER_RAY)
         min_credit_from_seller = buy_criteria['quantity'] * buy_criteria['price'] + self.ALLOWANCE_CREDIT
         seller_ray = self._rays_service.getTraderRay(min_credit_from_seller)
         seller = TransferMarketManager(*seller_ray)
-        return seller.performBuy(strategy_name=EXCHANGE_STRATEGY, *buy_criteria, items=items)
+        return seller.performBuy(strategy_name=EXCHANGE_STRATEGY, **buy_criteria, trade_ids=trade_ids)
 
     def _getBuyQuantity(self, target_value: int) -> int:
 

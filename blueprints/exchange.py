@@ -1,3 +1,5 @@
+import asyncio
+
 import jsonschema
 from flask import Blueprint, request, Response
 from flask_jsonschema_validator import JSONSchemaValidator
@@ -21,7 +23,8 @@ def handshake():
 def exchange():
     # initiate the exchange, i.e start distribution of the requested resources
     ctrl = ExchangeController(request)
-    return ctrl.performExchange()
+    run([ctrl.performExchange()])
+    return Response('Working on the exchange')
 
 
 @exchange.route('/rays', methods=['POST'])
@@ -33,3 +36,11 @@ def delete():
 @exchange.errorhandler(jsonschema.ValidationError)
 def onValidationError(e):
     return Response("There was a validation error: " + str(e), 400)
+
+
+def run(coroutines):
+    asyncio.run(gather(coroutines))
+
+
+async def gather(coroutines: list):
+    return await asyncio.gather(*coroutines)
