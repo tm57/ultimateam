@@ -1,0 +1,2 @@
+class InvalidBuyStrategyException(Exception):
+    pass

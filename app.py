@@ -1,36 +1,34 @@
-import fut
-import numpy as np
-import csv
-import pandas as pd
-from fbprophet import Prophet
-from datetime import datetime
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
+import requests
+from dotenv import load_dotenv
+import argparse
 
-from src.modules.scrapers.futbinScraper import FutbinImporter
+from src.utils.utils import sendMessage
 
-f = FutbinImporter()
-data = f.getPlayerPriceHistory(155862, 'daily_graph')
-# data = data + f.getPlayerPriceHistory(155862, 'da_yesterday')
-# data = data + f.getPlayerPriceHistory(155862, 'today')
-a = np.asarray(data)
-csv = open('./data/single-player.csv', "w")
-csv.write("ds,"+ "y"+"\n")
+load_dotenv()
 
-for v in data:
-	row = str(datetime.fromtimestamp(v['time']).strftime('%Y-%M-%d')) + "," + str(v['price']) + "\n"
-	csv.write(row)
-csv.close()
+parser = argparse.ArgumentParser()
+parser.add_argument("--action", help="Command, buy, sell, send to club", type=str)
+parser.add_argument("--strategy", help="Which algorithm to use", type=str)
+parser.add_argument("--to_club", help="whether to send bought items to club", type=int)
 
-df = pd.read_csv('./data/single-player.csv')
-df.head()
-m = Prophet(changepoint_prior_scale=0.01)
-m.fit(df)
-m.plot(df)
-future = m.make_future_dataframe(periods=365)
-future.tail()
-forecast = m.predict(future)
-forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail()
-forecast.plot()
+args = parser.parse_args()
+action = args.action
+strategy = args.strategy
+to_club = args.to_club
+manager = 23
+try:
+    if action == 'buy':
+        manager.performBuy(strategy_name=strategy, send_to_club=bool(to_club))
+    elif action == 'sell':
+        manager.performSell(strategy)
+    elif action == 'auto':
+        requests.post('http://localhost:3000/auto', data={'strategy': strategy})
+    elif action == 'send-to-club':
+        manager.sendWatchlistToClub()
+    elif action == 'relist':
+        manager.relistExpired()
 
-
+except Exception as e:
+    sendMessage(
+        ':warning:  There was exception, check the app asap :warning: \n' + str(e)
+    )
