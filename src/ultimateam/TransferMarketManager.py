@@ -24,9 +24,11 @@ from src.ultimateam.fut.constants import *
 class TransferMarketManager:
     AUTO_TRADE_PILE_SIZE_LIMIT = 95
 
-    def __init__(self, email, password, passphrase):
+    def __init__(self, email, password, passphrase, codes):
+        code = codes[random.randint(0, len(codes) - 1)]
+        print(code)
         self.item_ids = []
-        fut = FutClient(email, password, passphrase)
+        fut = FutClient(email, password, passphrase, code=code)
         self.bot_name = passphrase
         self.client = fut.getClient()
 

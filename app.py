@@ -2,6 +2,8 @@ import requests
 from dotenv import load_dotenv
 import argparse
 
+from flask import json
+
 from src.utils.utils import sendMessage
 
 load_dotenv()
@@ -22,7 +24,11 @@ try:
     elif action == 'sell':
         manager.performSell(strategy)
     elif action == 'auto':
-        requests.post('http://localhost:3000/auto', data={'strategy': strategy})
+        with open('seeds/users.json') as json_file:
+            data = json.load(json_file)
+
+        for i in data:
+            requests.post('http://localhost:3000/auto', json=i)
     elif action == 'send-to-club':
         manager.sendWatchlistToClub()
     elif action == 'relist':

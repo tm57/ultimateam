@@ -1,4 +1,3 @@
-import asyncio
 import json
 
 from flask import Flask, request, jsonify
@@ -36,16 +35,10 @@ def relist():
 
 @app.route("/auto", methods=["POST"])
 def auto():
-    futures = []
-    with open('seeds/users.json') as json_file:
-        ray_mastereo = json.load(json_file)
+    data = request.get_json()
+    manager = TransferMarketManager(data['email'], data['password'], data['passphrase'], data['codes'])
+    manager.performSell(data['strategy'])
 
-        for ray in ray_mastereo:
-            manager = TransferMarketManager(ray['email'], ray['password'], ray['passphrase'])
-            futures.append({'manager': manager, 'strategy': ray['strategy']})
-
-        for future in futures:
-            future['manager'].performAutoTrade(future['strategy'])
     return jsonify('Jobs running now, check your messaging up for updates 🤞')
 
 
@@ -66,10 +59,6 @@ def getUsers():
 @app.route("/", methods=["GET"])
 def index():
     return jsonify('It works')
-
-
-async def main(callables):
-    return await asyncio.gather(*((data['manager'].performAutoTrade('sniper')) for data in callables))
 
 
 if __name__ == "__main__":

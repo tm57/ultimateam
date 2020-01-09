@@ -17,4 +17,4 @@ six==1.13.0
 typing==3.7.4.1
 urllib3==1.25.7
 Werkzeug==0.16.0
--e git://github.com/tm57/fut@5aa6ca93100389695edce62f16d8e52b889cc164#egg=fut
+-e git://github.com/tm57/fut@eaf1d83b13e0f1fe6218168cb64983dcd60ba695#egg=fut
