@@ -4,3 +4,4 @@ data/
 venv/
 auth/*.txt
 /seeds/users.json
+.env
