@@ -6,7 +6,7 @@
  
  Inside of the root of this project run 
  
- `docker-compose up --force-recreate -V -d`
+ `docker-compose up --force-recreate -V`
  
  After this point create a `/seeds/users.json` file based off of `/seeds/users.example.json`. 
  
