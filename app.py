@@ -17,22 +17,15 @@ args = parser.parse_args()
 action = args.action
 strategy = args.strategy
 to_club = args.to_club
-manager = 23
-try:
-    if action == 'buy':
-        manager.performBuy(strategy_name=strategy, send_to_club=bool(to_club))
-    elif action == 'sell':
-        manager.performSell(strategy)
-    elif action == 'auto':
-        with open('seeds/users.json') as json_file:
-            data = json.load(json_file)
 
-        for i in data:
-            requests.post('http://localhost:3000/auto', json=i)
-    elif action == 'send-to-club':
-        manager.sendWatchlistToClub()
-    elif action == 'relist':
-        manager.relistExpired()
+try:
+    with open('seeds/users.json') as json_file:
+        data = json.load(json_file)
+
+    for i in data:
+        i['action'] = action
+        i['strategy'] = strategy
+        requests.post('http://localhost:3000/run', json=i)
 
 except Exception as e:
     sendMessage(

@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 import os
 
 from blueprints.rays import rays
+from blueprints.trading import trading
 from src.ultimateam.TransferMarketManager import TransferMarketManager
 from src.ultimateam.application.controllers.api.UsersController import UsersController
 
@@ -13,17 +14,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.register_blueprint(rays)
-
-
-@app.route("/run", methods=["POST"])
-def run():
-    data = request.get_json()
-    # email = data['email']
-    # password = data['password']
-    # passphrase = data['passphrase']
-    # print email, passphrase, password
-
-    return jsonify(request.get_json())
+app.register_blueprint(trading)
 
 
 @app.route("/relist", methods=["POST"])
@@ -37,7 +28,7 @@ def relist():
 def auto():
     data = request.get_json()
     manager = TransferMarketManager(data['email'], data['password'], data['passphrase'], data['codes'])
-    manager.performSell(data['strategy'])
+    manager.performAutoTrade(data['strategy'])
 
     return jsonify('Jobs running now, check your messaging up for updates 🤞')
 

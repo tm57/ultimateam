@@ -6,6 +6,8 @@ import requests
 def sendMessage(message):
     data = {"text": message}
     url = os.getenv('SLACK_WEBHOOK_URL')
+    if url is None:
+        return
     requests.post(url, json=data)
 
 
