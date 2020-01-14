@@ -115,7 +115,7 @@ class TransferMarketManager:
             balance = self.client.keepalive()
             pile_size = self.pileSize()
             if pile_size >= self.AUTO_TRADE_PILE_SIZE_LIMIT:
-                msg = self.bot_name + 'Auto trade is stopping now' \
+                msg = self.bot_name + ' :Auto trade is stopping now' \
                                       '\n-->INITIAL BALANCE: %d\n' \
                                       '--> NEW BALANCE: %d' \
                                       '\nPROFIT/LOSS %d\n' \
